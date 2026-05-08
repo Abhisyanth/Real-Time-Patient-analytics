@@ -44,3 +44,72 @@ with col3:
 
 st.subheader(f"Raw Data for {selected_icu}")
 st.dataframe(filtered_df.head(10))
+
+# Build a summary to feed the AI
+context = f"""
+The user is looking at the {selected_icu} department.
+- Total Patients: {len(filtered_df)}
+- Mortality Rate: {mortality:.2f}%
+- Average Wait Time: {wait:.2f} days
+"""
+# Initialize chat history in session state if it doesn't exist
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display existing chat history from the list
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# The Clear Conversation button
+if st.sidebar.button(" Clear Conversation"):
+    st.session_state.messages = []
+    
+    st.rerun()
+
+# Capture new user input
+if user_question := st.chat_input("Ask a question about this ICU department..."):
+
+ 
+    # Add user message to history and display it
+    st.session_state.messages.append({"role": "user", "content": user_question})
+    with st.chat_message("user"):
+        st.markdown(user_question)
+
+    # Process the response
+    with st.chat_message("assistant"):
+        response_placeholder = st.empty()
+        response_placeholder.markdown(" *Analyzing ICU metrics...*")
+        
+        # Build the prompt with context
+        full_prompt = f"""
+        You are a professional medical data analyst.   
+        
+        Current ICU Statistics for reference:
+        {context}
+
+        Conversation History:
+        {st.session_state.messages[-3:]} 
+
+        User Question: {user_question}
+        
+        Instruction: If the user is just saying thanks or greeting you, respond naturally. 
+        If they ask about data, use the statistics above to provide a concise, data-driven answer.
+        """
+        
+        try:
+            # This creates a stream instead of a single block
+            full_response = ""
+            for chunk in llm.stream(full_prompt):
+                full_response += chunk.content
+                response_placeholder.markdown(full_response + "▌")
+            
+            # Final clean display
+            response_placeholder.markdown(full_response)
+            
+            # Add assistant message to history
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            
+        except Exception as e:
+            st.error(f"Connection Error: {e}")
+
