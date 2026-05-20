@@ -55,7 +55,7 @@ pip install streamlit pandas langchain-groq python-dotenv
 Create a .env file in the root directory and add your API key:
 
 Code snippet
-GROQ_API_KEY=your_actual_key_here
+GROQ_API_KEY=the key which I used
 
 4. Run the App:
 
