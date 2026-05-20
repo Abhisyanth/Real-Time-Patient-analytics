@@ -3,6 +3,8 @@
 AI-Driven ICU Performance & Clinical Insights Dashboard
 Patient Analytics Pro is a real-time data application designed for healthcare administrators and clinicians. It transforms raw ICU dataset records into actionable insights by combining high-speed data processing with Llama 3.3-70B via the Groq API.
 
+Live App: https://patientanalytics-app-abhisyanth.streamlit.app/
+
 ## Key Features
 
 Dynamic ICU Analysis: Instantly filter through over 91,000 patient records by ICU department.
